@@ -1,0 +1,415 @@
+// =====================================================================
+// IntelliTrip — Prisma Schema (MySQL 8)
+// =====================================================================
+// Prisma is the ORM layer between our Node/Express backend and MySQL.
+// It gives us: type-safe queries, migrations, and a single source of
+// truth for the schema (this file). `database/schema.sql` is a plain
+// SQL mirror of what `prisma migrate dev` generates, kept for MySQL
+// Workbench inspection / manual demo purposes.
+// =====================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------
+
+enum Role {
+  USER
+  ADMIN
+  PARTNER
+}
+
+enum OtpPurpose {
+  REGISTRATION
+  LOGIN
+  PASSWORD_RESET
+}
+
+enum PlaceCategory {
+  ADVENTURE
+  NATURE
+  BEACH
+  FOOD
+  FAMILY
+  HISTORY
+  SHOPPING
+  NIGHTLIFE
+  SPIRITUAL
+  PHOTOGRAPHY
+  LUXURY
+}
+
+enum PlaceSource {
+  SEEDED
+  VERIFIED
+}
+
+enum TripStatus {
+  DRAFT
+  PLANNED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingType {
+  HOTEL
+  FLIGHT
+  CAB
+  EXPERIENCE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  FAILED
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+}
+
+enum ExpenseCategory {
+  HOTEL
+  FOOD
+  TRANSPORT
+  ACTIVITIES
+  SHOPPING
+  OTHER
+}
+
+enum EmergencyType {
+  POLICE
+  HOSPITAL
+  FIRE
+  TOURIST_HELPLINE
+  GENERAL
+}
+
+// ---------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------
+
+model User {
+  id               Int      @id @default(autoincrement())
+  fullName         String   @map("full_name") @db.VarChar(120)
+  email            String   @unique @db.VarChar(190)
+  mobile           String   @unique @db.VarChar(20)
+  passwordHash     String   @map("password_hash") @db.VarChar(255)
+  role             Role     @default(USER)
+  isVerified       Boolean  @default(false) @map("is_verified")
+  profileImage     String?  @map("profile_image") @db.VarChar(500)
+  language         String   @default("en") @db.VarChar(10)
+  budgetPreference String?  @map("budget_preference") @db.VarChar(20)
+  travelStyle      String?  @map("travel_style") @db.VarChar(40)
+
+  // ---- Premium membership (recurring subscription via Razorpay) ----
+  isPremium              Boolean   @default(false) @map("is_premium")
+  premiumPlan            String?   @map("premium_plan") @db.VarChar(60)
+  premiumSince           DateTime? @map("premium_since")
+  razorpaySubscriptionId String?   @map("razorpay_subscription_id") @db.VarChar(120)
+
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  otps        OtpVerification[]
+  preference  UserPreference?
+  trips       Trip[]
+  bookings    Booking[]
+  payments    Payment[]
+  expensesPaid Expense[]        @relation("ExpensePaidBy")
+  expenseSplits ExpenseSplit[]
+  reviews     Review[]
+
+  @@map("users")
+}
+
+model OtpVerification {
+  id         Int        @id @default(autoincrement())
+  userId     Int        @map("user_id")
+  otpHash    String     @map("otp_hash") @db.VarChar(255)
+  purpose    OtpPurpose @default(REGISTRATION)
+  expiresAt  DateTime   @map("expires_at")
+  consumed   Boolean    @default(false)
+  attempts   Int        @default(0)
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("otp_verifications")
+}
+
+model UserPreference {
+  id                       Int      @id @default(autoincrement())
+  userId                   Int      @unique @map("user_id")
+  favouriteDestinations    Json?    @map("favourite_destinations")
+  activities               Json?
+  travelStyle              String?  @map("travel_style") @db.VarChar(40)
+  foodPreference           String?  @map("food_preference") @db.VarChar(40)
+  accommodationPreference  String?  @map("accommodation_preference") @db.VarChar(40)
+  activityPreference       String?  @map("activity_preference") @db.VarChar(40)
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model Destination {
+  id               Int      @id @default(autoincrement())
+  name             String   @db.VarChar(120)
+  slug             String   @unique @db.VarChar(140)
+  country          String   @default("India") @db.VarChar(80)
+  state            String?  @db.VarChar(80)
+  description      String   @db.Text
+  imageUrl         String?  @map("image_url") @db.VarChar(500)
+  bestTimeToVisit  String?  @map("best_time_to_visit") @db.VarChar(120)
+  avgCostPerDay    Decimal? @map("avg_cost_per_day") @db.Decimal(10, 2)
+  latitude         Decimal? @db.Decimal(10, 7)
+  longitude        Decimal? @db.Decimal(10, 7)
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  places Place[]
+  trips  Trip[]
+
+  @@map("destinations")
+}
+
+model Place {
+  id                 Int           @id @default(autoincrement())
+  destinationId      Int           @map("destination_id")
+  name               String        @db.VarChar(150)
+  description        String        @db.Text
+  category           PlaceCategory
+  isHiddenGem        Boolean       @default(false) @map("is_hidden_gem")
+  latitude           Decimal?      @db.Decimal(10, 7)
+  longitude          Decimal?      @db.Decimal(10, 7)
+  imageUrl           String?       @map("image_url") @db.VarChar(500)
+  avgDurationMinutes Int           @default(90) @map("avg_duration_minutes")
+  estimatedCost      Decimal       @default(0) @map("estimated_cost") @db.Decimal(10, 2)
+  rating             Decimal?      @db.Decimal(2, 1)
+  address            String?       @db.VarChar(255)
+  source             PlaceSource   @default(SEEDED)
+  createdAt          DateTime      @default(now()) @map("created_at")
+
+  destination     Destination      @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  itineraryItems  ItineraryItem[]
+  reviews         Review[]
+
+  @@index([destinationId])
+  @@index([category])
+  @@index([isHiddenGem])
+  @@map("places")
+}
+
+model Trip {
+  id                       Int         @id @default(autoincrement())
+  userId                   Int         @map("user_id")
+  destinationId            Int?        @map("destination_id")
+  title                    String      @db.VarChar(200)
+  startLocation            String?     @map("start_location") @db.VarChar(150)
+  startDate                DateTime    @map("start_date") @db.Date
+  endDate                  DateTime    @map("end_date") @db.Date
+  travellers               Int         @default(1)
+  tripType                 String?     @map("trip_type") @db.VarChar(40)
+  budget                   Decimal?    @db.Decimal(10, 2)
+  currency                 String      @default("INR") @db.VarChar(10)
+  interests                Json?
+  travelStyle              String?     @map("travel_style") @db.VarChar(40)
+  foodPreference           String?     @map("food_preference") @db.VarChar(40)
+  accommodationPreference  String?     @map("accommodation_preference") @db.VarChar(40)
+  activityPreference       String?     @map("activity_preference") @db.VarChar(40)
+  status                   TripStatus  @default(DRAFT)
+  aiSummary                String?     @map("ai_summary") @db.Text
+  estimatedBudget          Decimal?    @map("estimated_budget") @db.Decimal(10, 2)
+  rawAiResponse             Json?       @map("raw_ai_response")
+  createdAt                DateTime    @default(now()) @map("created_at")
+  updatedAt                DateTime    @updatedAt @map("updated_at")
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destination Destination? @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+  days        TripDay[]
+  bookings    Booking[]
+  expenses    Expense[]
+
+  @@index([userId])
+  @@index([destinationId])
+  @@map("trips")
+}
+
+model TripDay {
+  id         Int      @id @default(autoincrement())
+  tripId     Int      @map("trip_id")
+  dayNumber  Int      @map("day_number")
+  title      String?  @db.VarChar(200)
+  date       DateTime? @db.Date
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  trip  Trip            @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  items ItineraryItem[]
+
+  @@unique([tripId, dayNumber])
+  @@map("trip_days")
+}
+
+model ItineraryItem {
+  id               Int      @id @default(autoincrement())
+  tripDayId        Int      @map("trip_day_id")
+  placeId          Int?     @map("place_id")
+  name             String   @db.VarChar(200)
+  description      String?  @db.Text
+  location         String?  @db.VarChar(200)
+  latitude         Decimal? @db.Decimal(10, 7)
+  longitude        Decimal? @db.Decimal(10, 7)
+  category         String?  @db.VarChar(40)
+  startTime        String?  @map("start_time") @db.VarChar(20)
+  durationMinutes  Int      @default(60) @map("duration_minutes")
+  estimatedCost    Decimal  @default(0) @map("estimated_cost") @db.Decimal(10, 2)
+  orderIndex       Int      @default(0) @map("order_index")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  tripDay TripDay @relation(fields: [tripDayId], references: [id], onDelete: Cascade)
+  place   Place?  @relation(fields: [placeId], references: [id], onDelete: SetNull)
+
+  @@index([tripDayId])
+  @@index([placeId])
+  @@map("itinerary_items")
+}
+
+model Booking {
+  id           Int           @id @default(autoincrement())
+  userId       Int           @map("user_id")
+  tripId       Int?          @map("trip_id")
+  type         BookingType
+  status       BookingStatus @default(PENDING)
+  provider     String        @default("MockBookingProvider") @db.VarChar(60)
+  totalAmount  Decimal       @default(0) @map("total_amount") @db.Decimal(10, 2)
+  currency     String        @default("INR") @db.VarChar(10)
+  isMock       Boolean       @default(true) @map("is_mock")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip    Trip?         @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  items   BookingItem[]
+  payment Payment?
+
+  @@index([userId])
+  @@index([tripId])
+  @@map("bookings")
+}
+
+model BookingItem {
+  id          Int      @id @default(autoincrement())
+  bookingId   Int      @map("booking_id")
+  itemName    String   @map("item_name") @db.VarChar(200)
+  description String?  @db.VarChar(500)
+  quantity    Int      @default(1)
+  unitPrice   Decimal  @default(0) @map("unit_price") @db.Decimal(10, 2)
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@map("booking_items")
+}
+
+model Payment {
+  id             Int           @id @default(autoincrement())
+  bookingId      Int           @unique @map("booking_id")
+  userId         Int           @map("user_id")
+  method         String        @default("UPI") @db.VarChar(20)
+  provider       String        @default("MockPaymentProvider") @db.VarChar(60)
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("INR") @db.VarChar(10)
+  status         PaymentStatus @default(INITIATED)
+  transactionRef String?       @map("transaction_ref") @db.VarChar(120)
+  upiId          String?       @map("upi_id") @db.VarChar(120)
+  verifiedAt     DateTime?     @map("verified_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("payments")
+}
+
+model Expense {
+  id            Int             @id @default(autoincrement())
+  tripId        Int             @map("trip_id")
+  category      ExpenseCategory
+  amount        Decimal         @db.Decimal(10, 2)
+  description   String?         @db.VarChar(255)
+  paidByUserId  Int             @map("paid_by_user_id")
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  trip    Trip           @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  paidBy  User           @relation("ExpensePaidBy", fields: [paidByUserId], references: [id], onDelete: Cascade)
+  splits  ExpenseSplit[]
+
+  @@index([tripId])
+  @@index([paidByUserId])
+  @@map("expenses")
+}
+
+model ExpenseSplit {
+  id               Int      @id @default(autoincrement())
+  expenseId        Int      @map("expense_id")
+  userId           Int?     @map("user_id")
+  participantName  String?  @map("participant_name") @db.VarChar(120)
+  shareAmount      Decimal  @map("share_amount") @db.Decimal(10, 2)
+  settled          Boolean  @default(false)
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([expenseId])
+  @@index([userId])
+  @@map("expense_splits")
+}
+
+model EmergencyContact {
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(150)
+  type         EmergencyType
+  phoneNumber  String        @map("phone_number") @db.VarChar(20)
+  city         String?       @db.VarChar(80)
+  state        String?       @db.VarChar(80)
+  isNational   Boolean       @default(false) @map("is_national")
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  @@index([city])
+  @@map("emergency_contacts")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  placeId   Int      @map("place_id")
+  userId    Int?     @map("user_id")
+  rating    Decimal  @db.Decimal(2, 1)
+  comment   String?  @db.VarChar(500)
+  isSeed    Boolean  @default(false) @map("is_seed")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  user  User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([placeId])
+  @@map("reviews")
+}

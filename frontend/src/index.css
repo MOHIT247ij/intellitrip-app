@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-body text-slate-800 bg-sand-50 antialiased;
+}
+
+h1, h2, h3, h4 {
+  @apply font-display;
+}
+
+::selection {
+  @apply bg-brand-200 text-brand-900;
+}
+
+/* Focus states for accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid theme('colors.brand.500');
+  outline-offset: 2px;
+}
+
+.skeleton {
+  @apply bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 bg-[length:800px_100%] animate-shimmer rounded-lg;
+}
+
+.container-page {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 px-6 py-3 text-sm font-semibold text-white shadow-card transition duration-300 hover:-translate-y-0.5 hover:from-brand-700 hover:to-brand-600 hover:shadow-cardHover active:scale-95 disabled:pointer-events-none disabled:opacity-50 disabled:hover:translate-y-0;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full border border-brand-600 px-6 py-3 text-sm font-semibold text-brand-700 transition duration-300 hover:-translate-y-0.5 hover:bg-brand-50 hover:shadow-card active:scale-95 disabled:pointer-events-none disabled:opacity-50 disabled:hover:translate-y-0;
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 active:scale-95;
+}
+
+.btn-accent {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-accent-500 to-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-card transition duration-300 hover:-translate-y-0.5 hover:from-accent-600 hover:to-accent-700 hover:shadow-cardHover active:scale-95 disabled:pointer-events-none disabled:opacity-50 disabled:hover:translate-y-0;
+}
+
+/* Solid white pill button — use this (not btn-primary/btn-accent overrides)
+   for a button placed on top of a gradient/colored background, since
+   btn-primary/btn-accent paint a gradient background-image that a plain
+   !bg-white override cannot hide. */
+.btn-light {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-brand-700 shadow-card transition duration-300 hover:-translate-y-0.5 hover:bg-brand-50 hover:shadow-cardHover active:scale-95 disabled:pointer-events-none disabled:opacity-50;
+}
+
+.card {
+  @apply rounded-xl2 bg-white shadow-card ring-1 ring-slate-900/5 transition duration-300 hover:-translate-y-0.5 hover:shadow-cardHover;
+}
+
+.input-field {
+  @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 shadow-soft transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30;
+}
+
+.label-field {
+  @apply mb-1.5 block text-sm font-medium text-slate-700;
+}
+
+.badge-mock {
+  @apply inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 shadow-soft;
+}
+
+.badge-hidden-gem {
+  @apply inline-flex items-center gap-1 rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700 shadow-soft;
+}
+
+.badge-accent {
+  @apply inline-flex items-center gap-1 rounded-full bg-accent-100 px-2.5 py-1 text-xs font-semibold text-accent-700 shadow-soft;
+}
+
+.page-hero {
+  @apply relative mb-8 overflow-hidden rounded-xl2 bg-gradient-to-br from-brand-700 via-brand-600 to-accent-500 p-6 text-white shadow-cardHover sm:p-8;
+}
+
+.page-hero-icon {
+  @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white shadow-inner2 backdrop-blur;
+}
+
+/* ---- Richer visual-polish utilities (shared across pages) ---- */
+
+.section-eyebrow {
+  @apply inline-flex items-center gap-1.5 rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-700;
+}
+
+.section-heading {
+  @apply font-display text-3xl font-bold text-slate-900;
+}
+
+.section-subheading {
+  @apply mt-2 text-slate-500;
+}
+
+.icon-badge {
+  @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-card;
+}
+
+.icon-badge-soft {
+  @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-100;
+}
+
+.text-gradient {
+  @apply bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-soft backdrop-blur;
+}
+
+.divider {
+  @apply my-8 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent;
+}
+
+.blob {
+  @apply pointer-events-none absolute rounded-full opacity-60 blur-3xl;
+}

@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "home": "Home",
+    "explore": "Explore",
+    "planner": "AI Planner",
+    "trips": "Trips",
+    "bookings": "Bookings",
+    "about": "About",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "expenses": "Expenses",
+    "safety": "Safety",
+    "admin": "Admin",
+    "logout": "Logout"
+  },
+  "hero": {
+    "headline": "Plan Less. Travel More.",
+    "subtitle": "Your AI-powered travel companion for personalized itineraries, hidden gems, smarter routes and seamless travel planning.",
+    "ctaPrimary": "Plan My Trip",
+    "ctaSecondary": "Explore Destinations"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "viewDetails": "View details",
+    "addToItinerary": "Add to itinerary",
+    "remove": "Remove",
+    "book": "Book",
+    "search": "Search",
+    "noResults": "No results found.",
+    "tryAgain": "Try again",
+    "somethingWentWrong": "Something went wrong. Please try again.",
+    "mockData": "Development / Mock Data",
+    "hiddenGem": "Hidden Gem",
+    "popular": "Popular Attraction"
+  },
+  "footer": {
+    "tagline": "An AI travel companion — not a collection of CRUD forms.",
+    "rights": "All rights reserved."
+  }
+}
