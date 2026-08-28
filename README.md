@@ -1,5 +1,8 @@
 # IntelliTrip — AI-Driven Travel Planning and Booking Platform
 
+🔗 **Live Demo:** https://intellitrip-app.vercel.app
+💻 **GitHub Repo:** https://github.com/MOHIT247ij/intellitrip-app
+
 An MCA postgraduate mini project: a full-stack, AI-powered travel planning and booking platform. IntelliTrip generates structured, day-by-day itineraries using **Google Gemini** grounded by a genuine **Retrieval-Augmented Generation (RAG)** pipeline over a real **MySQL** database, and layers on interactive maps, live weather, hidden-gem discovery, group expense splitting, a UPI/payment-gateway architecture, and a multilingual (English/Hindi/Marathi) UI.
 
 > **Honesty note on this build:** every external paid API (Gemini, Google Maps, OpenWeather, booking inventory, payments, SMS/Email OTP delivery) has a clean **provider abstraction** with a **mock/fallback mode**, so the whole application runs and demos correctly with **zero API keys configured**. Add real keys any time to upgrade a feature from demo mode to live mode — see [Mock Mode vs Production](#mock-mode-vs-production) below.
