@@ -7,6 +7,7 @@
  * -----------------------------------------------------------------
  */
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const prisma = require('../config/prisma');
 const env = require('../config/env');
 const ApiError = require('../utils/ApiError');
@@ -190,6 +191,66 @@ async function resetPassword({ userId, otp, newPassword }) {
   return { user: sanitizeUser(user), token };
 }
 
+/**
+ * googleAuth — "Continue with Google" sign-in/sign-up.
+ *
+ * The frontend uses Google Identity Services to get a signed ID token
+ * ("credential") directly from Google — we never see the user's Google
+ * password. Here we verify that token really came from Google and was
+ * issued for OUR app (audience = env.googleClientId), then:
+ *   - if a user with that email already exists, log them in (and mark
+ *     verified, since Google already verified the email for us);
+ *   - otherwise create a brand-new account. Google doesn't give us a
+ *     phone number, but `mobile` is a required/unique column, so we
+ *     fill it with a generated placeholder — the account still works
+ *     fully via Google sign-in; the user can add a real number later
+ *     from their Profile page if the app needs one for anything.
+ */
+async function googleAuth({ credential }) {
+  // Lazy require so the app still boots (mock/dev mode) even before
+  // `npm install` has pulled in google-auth-library.
+  // eslint-disable-next-line global-require
+  const { OAuth2Client } = require('google-auth-library');
+  if (!env.googleClientId) {
+    throw new ApiError(500, 'Google sign-in is not configured on the server (missing GOOGLE_CLIENT_ID).');
+  }
+
+  const client = new OAuth2Client(env.googleClientId);
+  let payload;
+  try {
+    const ticket = await client.verifyIdToken({ idToken: credential, audience: env.googleClientId });
+    payload = ticket.getPayload();
+  } catch (err) {
+    throw new ApiError(401, 'Could not verify Google sign-in. Please try again.');
+  }
+
+  if (!payload?.email) throw new ApiError(400, 'Google account has no email address.');
+  const email = payload.email.toLowerCase();
+
+  let user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user) {
+    const placeholderMobile = `g${Date.now()}${Math.floor(Math.random() * 900 + 100)}`;
+    const randomPasswordHash = await passwordUtils.hash(crypto.randomBytes(24).toString('hex'));
+    user = await prisma.user.create({
+      data: {
+        fullName: payload.name || email.split('@')[0],
+        email,
+        mobile: placeholderMobile,
+        passwordHash: randomPasswordHash,
+        isVerified: true,
+        profileImage: payload.picture || null,
+      },
+    });
+    await prisma.userPreference.upsert({ where: { userId: user.id }, update: {}, create: { userId: user.id } });
+  } else if (!user.isVerified) {
+    user = await prisma.user.update({ where: { id: user.id }, data: { isVerified: true } });
+  }
+
+  const token = signToken(user);
+  return { user: sanitizeUser(user), token };
+}
+
 /** Login supports identifier = email OR mobile number. */
 async function login({ identifier, password }) {
   const user = await prisma.user.findFirst({
@@ -216,4 +277,4 @@ async function login({ identifier, password }) {
   return { user: sanitizeUser(user), token };
 }
 
-module.exports = { register, verifyOtp, resendOtp, login, forgotPassword, resetPassword, sanitizeUser, signToken };
+module.exports = { register, verifyOtp, resendOtp, login, googleAuth, forgotPassword, resetPassword, sanitizeUser, signToken };

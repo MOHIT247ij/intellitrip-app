@@ -19,6 +19,7 @@ const {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  googleAuthSchema,
 } = require('../validators/authValidators');
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.post('/register', authLimiter, validate(registerSchema), authController.r
 router.post('/verify-otp', authLimiter, validate(verifyOtpSchema), authController.verifyOtpHandler);
 router.post('/resend-otp', authLimiter, validate(resendOtpSchema), authController.resendOtpHandler);
 router.post('/login', authLimiter, validate(loginSchema), authController.login);
+router.post('/google', authLimiter, validate(googleAuthSchema), authController.googleAuthHandler);
 router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), authController.forgotPasswordHandler);
 router.post('/reset-password', authLimiter, validate(resetPasswordSchema), authController.resetPasswordHandler);
 

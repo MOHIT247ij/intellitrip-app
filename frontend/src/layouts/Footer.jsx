@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Compass, MapPin, Sparkles, Hotel, Plane, Car, PartyPopper, UtensilsCrossed, Info, ShieldCheck } from 'lucide-react';
+import { Compass, MapPin, Sparkles, Hotel, Plane, Car, PartyPopper, UtensilsCrossed, Info, ShieldCheck, FileText, RotateCcw, Mail } from 'lucide-react';
 
 const PRODUCT_LINKS = [
   { to: '/explore', label: 'Explore', icon: MapPin },
@@ -19,6 +19,13 @@ const TRAVEL_LINKS = [
 const COMPANY_LINKS = [
   { to: '/about', label: 'About', icon: Info },
   { to: '/safety', label: 'Safety', icon: ShieldCheck },
+  { to: '/contact', label: 'Contact Us', icon: Mail },
+];
+
+const LEGAL_LINKS = [
+  { to: '/terms', label: 'Terms & Conditions', icon: FileText },
+  { to: '/privacy', label: 'Privacy Policy', icon: ShieldCheck },
+  { to: '/refund-policy', label: 'Refund Policy', icon: RotateCcw },
 ];
 
 function LinkList({ items }) {
@@ -41,7 +48,7 @@ export default function Footer() {
   return (
     <footer className="relative mt-20 overflow-hidden border-t border-slate-100 bg-gradient-to-b from-white to-sand-50">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-400 to-transparent" />
-      <div className="container-page grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="container-page grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-5">
         <div>
           <div className="flex items-center gap-2 font-display text-lg font-bold text-brand-700">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-card">
@@ -68,6 +75,12 @@ export default function Footer() {
             <span className="h-1.5 w-1.5 rounded-full bg-brand-500" /> Company
           </h4>
           <LinkList items={COMPANY_LINKS} />
+        </div>
+        <div>
+          <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-800">
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-500" /> Legal
+          </h4>
+          <LinkList items={LEGAL_LINKS} />
         </div>
       </div>
       <div className="border-t border-slate-100 py-4 text-center text-xs text-slate-400">

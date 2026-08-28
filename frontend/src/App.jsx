@@ -24,6 +24,10 @@ import Premium from './pages/Premium';
 import Safety from './pages/Safety';
 import About from './pages/About';
 import Admin from './pages/Admin';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import RefundPolicy from './pages/RefundPolicy';
+import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -44,6 +48,10 @@ export default function App() {
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/restaurants" element={<Restaurants />} />
         <Route path="/safety" element={<Safety />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/contact" element={<Contact />} />
 
         <Route path="/planner" element={<ProtectedRoute><Planner /></ProtectedRoute>} />
         <Route path="/trips" element={<ProtectedRoute><Trips /></ProtectedRoute>} />
