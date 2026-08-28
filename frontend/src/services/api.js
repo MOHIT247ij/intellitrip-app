@@ -11,7 +11,12 @@ import axios from 'axios';
 
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-const api = axios.create({ baseURL: API_URL, timeout: 30000 });
+// 60s (not 30s): the free hosting tier this API runs on (Render) spins the
+// server down after 15 minutes of inactivity, and the first request after
+// that can take 50+ seconds to wake it back up. A 30s timeout was firing
+// "timeout of 30000ms exceeded" on that very first request even though the
+// server was healthy and would have responded a few seconds later.
+const api = axios.create({ baseURL: API_URL, timeout: 60000 });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('intellitrip_token');
