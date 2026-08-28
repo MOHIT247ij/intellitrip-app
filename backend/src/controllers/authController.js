@@ -26,6 +26,11 @@ const login = asyncHandler(async (req, res) => {
   success(res, result);
 });
 
+const googleAuthHandler = asyncHandler(async (req, res) => {
+  const result = await authService.googleAuth(req.body);
+  success(res, result);
+});
+
 const forgotPasswordHandler = asyncHandler(async (req, res) => {
   const result = await authService.forgotPassword(req.body.email);
   success(res, result);
@@ -42,6 +47,7 @@ module.exports = {
   verifyOtpHandler,
   resendOtpHandler,
   login,
+  googleAuthHandler,
   forgotPasswordHandler,
   resetPasswordHandler,
 };

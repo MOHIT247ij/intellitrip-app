@@ -33,7 +33,7 @@ function loadGoogleIdentityScript() {
   return gsiLoadPromise;
 }
 
-export default function GoogleSignInButton({ onCredential }) {
+export default function GoogleSignInButton({ onCredential, showDivider = true }) {
   const buttonRef = useRef(null);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -70,9 +70,11 @@ export default function GoogleSignInButton({ onCredential }) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex w-full items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
-        <span className="h-px flex-1 bg-slate-200" /> or <span className="h-px flex-1 bg-slate-200" />
-      </div>
+      {showDivider && (
+        <div className="flex w-full items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
+          <span className="h-px flex-1 bg-slate-200" /> or <span className="h-px flex-1 bg-slate-200" />
+        </div>
+      )}
       <div ref={buttonRef} className="flex w-full justify-center" />
     </div>
   );
