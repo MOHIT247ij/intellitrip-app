@@ -81,13 +81,24 @@ async function issueOtp(user, purpose) {
     logger.info(`[DEV OTP] userId=${userId} purpose=${purpose} otp=${otp} (valid ${env.otpExpiryMinutes} min)`);
   }
 
-  const emailResult = await emailProvider.sendOtpEmail({
+  // Gmail SMTP can occasionally take a long time to connect/respond from
+  // some hosting networks (Render's free tier included) — long enough to
+  // blow past the frontend's request timeout even though the OTP itself
+  // was already created and the email eventually goes out. Race the send
+  // against a short timeout so register/login/etc. never hang the HTTP
+  // response on mail delivery; the send keeps running in the background
+  // and its own success/failure is logged either way.
+  const emailPromise = emailProvider.sendOtpEmail({
     to: user.email,
     name: user.fullName,
     otp,
     purpose,
     expiryMinutes: env.otpExpiryMinutes,
   });
+  const timeoutPromise = new Promise((resolve) => {
+    setTimeout(() => resolve({ sent: false, pending: true }), 8000);
+  });
+  const emailResult = await Promise.race([emailPromise, timeoutPromise]);
 
   return {
     otp,
