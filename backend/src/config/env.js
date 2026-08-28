@@ -29,12 +29,6 @@ module.exports = {
   jwtSecret: process.env.JWT_SECRET || 'dev_insecure_secret_change_me',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
 
-  // "Continue with Google" sign-in — same public Client ID used by the
-  // frontend (VITE_GOOGLE_CLIENT_ID) to render the button; the backend
-  // uses it only as the expected `audience` when verifying the ID token
-  // Google hands back. No client secret is needed for this flow.
-  googleClientId: process.env.GOOGLE_CLIENT_ID || '',
-
   otpDevMode: (process.env.OTP_DEV_MODE || 'true') === 'true',
   otpExpiryMinutes: parseInt(process.env.OTP_EXPIRY_MINUTES, 10) || 10,
 

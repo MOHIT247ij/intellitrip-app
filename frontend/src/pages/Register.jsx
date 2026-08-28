@@ -4,15 +4,12 @@ import { useForm } from 'react-hook-form';
 import { Compass, Loader2, CheckCircle2, Crown } from 'lucide-react';
 import { authService } from '../services/authService';
 import { useToast } from '../context/ToastContext';
-import { useAuth } from '../context/AuthContext';
-import GoogleSignInButton from '../components/GoogleSignInButton';
 
 export default function Register() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const [loading, setLoading] = useState(false);
   const [plan, setPlan] = useState('free'); // 'free' | 'premium'
   const { showToast } = useToast();
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const onSubmit = async (values) => {
@@ -21,22 +18,6 @@ export default function Register() {
       const result = await authService.register(values);
       showToast('Account created! Please verify with the OTP sent to your email/mobile.', 'success');
       navigate('/verify-otp', { state: { userId: result.user.id, devOtp: result.devOtp, plan } });
-    } catch (err) {
-      showToast(err.message, 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Google sign-up skips the OTP step entirely — Google already verified
-  // the email for us — so the account is created and logged in immediately.
-  const handleGoogleCredential = async (credential) => {
-    setLoading(true);
-    try {
-      const result = await authService.googleAuth(credential);
-      login(result.user, result.token);
-      showToast(`Welcome, ${result.user.fullName.split(' ')[0]}!`, 'success');
-      navigate(plan === 'premium' ? '/premium' : '/');
     } catch (err) {
       showToast(err.message, 'error');
     } finally {
@@ -129,9 +110,6 @@ export default function Register() {
             {loading && <Loader2 className="animate-spin" size={16} />} Create account
           </button>
         </form>
-        <div className="mt-5">
-          <GoogleSignInButton onCredential={handleGoogleCredential} />
-        </div>
         <p className="mt-4 text-center text-sm text-slate-500">
           Already have an account?{' '}
           <Link to="/login" className="font-medium text-brand-600 hover:underline">Log in</Link>

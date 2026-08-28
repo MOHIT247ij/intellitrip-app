@@ -5,7 +5,6 @@ import { Compass, Loader2 } from 'lucide-react';
 import { authService } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import GoogleSignInButton from '../components/GoogleSignInButton';
 
 export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -26,20 +25,6 @@ export default function Login() {
       }
       login(result.user, result.token);
       showToast(`Welcome back, ${result.user.fullName.split(' ')[0]}!`, 'success');
-      navigate(location.state?.from?.pathname || '/');
-    } catch (err) {
-      showToast(err.message, 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleCredential = async (credential) => {
-    setLoading(true);
-    try {
-      const result = await authService.googleAuth(credential);
-      login(result.user, result.token);
-      showToast(`Welcome, ${result.user.fullName.split(' ')[0]}!`, 'success');
       navigate(location.state?.from?.pathname || '/');
     } catch (err) {
       showToast(err.message, 'error');
@@ -90,9 +75,6 @@ export default function Login() {
             Demo account: <strong>demo@intellitrip.app</strong> / <strong>Demo@1234</strong>
           </p>
         </form>
-        <div className="mt-5">
-          <GoogleSignInButton onCredential={handleGoogleCredential} />
-        </div>
         <p className="mt-4 text-center text-sm text-slate-500">
           Don't have an account?{' '}
           <Link to="/register" className="font-medium text-brand-600 hover:underline">Register</Link>

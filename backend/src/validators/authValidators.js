@@ -55,10 +55,6 @@ const resetPasswordSchema = z
     path: ['confirmPassword'],
   });
 
-const googleAuthSchema = z.object({
-  credential: z.string().min(20, 'Missing Google credential'),
-});
-
 module.exports = {
   registerSchema,
   verifyOtpSchema,
@@ -66,5 +62,4 @@ module.exports = {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  googleAuthSchema,
 };
