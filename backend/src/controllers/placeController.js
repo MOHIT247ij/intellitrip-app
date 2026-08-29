@@ -13,7 +13,16 @@ const listPlaces = asyncHandler(async (req, res) => {
   const { search, destinationId, category, hiddenGemsOnly, maxCost } = req.query;
 
   const where = {};
-  if (search) where.name = { contains: search };
+  // Users naturally search by destination/region name (e.g. "Goa"), not
+  // just the individual place's own name (e.g. "Baga Beach") — so match
+  // the place name, its address, AND its parent destination's name.
+  if (search) {
+    where.OR = [
+      { name: { contains: search } },
+      { address: { contains: search } },
+      { destination: { name: { contains: search } } },
+    ];
+  }
   if (destinationId) where.destinationId = Number(destinationId);
   if (category) where.category = category;
   if (hiddenGemsOnly === 'true') where.isHiddenGem = true;
