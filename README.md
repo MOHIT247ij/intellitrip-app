@@ -67,7 +67,7 @@ IntelliTrip lets a traveller describe a trip — either through a structured for
 
 ```
 IntelliTrip/
-├── README.md, .gitignore, LICENSE, package.json (root convenience scripts)
+├── README.md, .gitignore, package.json (root convenience scripts)
 ├── database/
 │   ├── schema.sql          # Plain-SQL mirror of the Prisma schema (for Workbench)
 │   └── seed.sql            # Reference destinations/places/emergency contacts
