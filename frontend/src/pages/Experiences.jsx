@@ -7,6 +7,7 @@ import { formatCurrency, formatDuration } from '../utils/format';
 import DestinationPicker from '../components/DestinationPicker';
 import SkeletonCard from '../components/SkeletonCard';
 import EmptyState from '../components/EmptyState';
+import PlaceImage from '../components/PlaceImage';
 
 function thingsToDoUrl(place) {
   return `https://www.google.com/search?q=${encodeURIComponent(`Things to do in ${place}`)}`;
@@ -63,7 +64,7 @@ export default function Experiences() {
               style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }}
             >
               <div className="h-40 w-full overflow-hidden">
-                <img src={exp.imageUrl} alt={exp.name} className="h-40 w-full object-cover transition duration-500 group-hover:scale-110" />
+                <PlaceImage name={exp.name} context={destination} fallback={exp.imageUrl} alt={exp.name} className="h-40 w-full object-cover transition duration-500 group-hover:scale-110" />
               </div>
               <div className="flex flex-1 flex-col p-4">
                 <h3 className="font-semibold text-slate-800">{exp.name}</h3>

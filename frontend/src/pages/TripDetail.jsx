@@ -14,6 +14,7 @@ import LoadingScreen from '../components/LoadingScreen';
 import ErrorState from '../components/ErrorState';
 import AiLoadingOverlay from '../components/AiLoadingOverlay';
 import EditTripModal from '../components/EditTripModal';
+import PlaceImage from '../components/PlaceImage';
 
 const REPLAN_SUGGESTIONS = [
   'Make it cheaper', 'Add more adventure', 'Remove shopping', 'Add hidden places',
@@ -129,7 +130,7 @@ export default function TripDetail() {
       {/* Header */}
       <div className="card mb-8 overflow-hidden">
         <div className="relative h-48 w-full bg-brand-100">
-          {trip.destination?.imageUrl && <img src={trip.destination.imageUrl} alt={destinationName} className="h-full w-full object-cover" />}
+          {destinationName && <PlaceImage name={destinationName} fallback={trip.destination?.imageUrl} alt={destinationName} className="h-full w-full object-cover" />}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
           <div className="absolute bottom-4 left-6 right-6 flex flex-wrap items-end justify-between gap-3 text-white">
             <div>

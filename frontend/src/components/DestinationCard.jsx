@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 import { MapPin, ArrowRight, Wallet } from 'lucide-react';
 import { formatCurrency } from '../utils/format';
+import PlaceImage from './PlaceImage';
 
 export default function DestinationCard({ destination }) {
   return (
     <Link to={`/explore?destinationId=${destination.id}`} className="card group flex flex-col overflow-hidden">
       <div className="relative h-52 w-full overflow-hidden">
-        <img
-          src={destination.imageUrl}
-          alt={destination.name}
-          loading="lazy"
+        <PlaceImage
+          name={destination.name}
+          context={destination.state}
+          fallback={destination.imageUrl}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/0" />

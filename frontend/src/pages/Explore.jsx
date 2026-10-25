@@ -9,11 +9,10 @@ import PlaceCard from '../components/PlaceCard';
 import SkeletonCard from '../components/SkeletonCard';
 import EmptyState from '../components/EmptyState';
 import ErrorState from '../components/ErrorState';
-import { useToast } from '../context/ToastContext';
+import PackagesModal from '../components/PackagesModal';
 
 export default function Explore() {
   const [searchParams] = useSearchParams();
-  const { showToast } = useToast();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [hiddenGemsOnly, setHiddenGemsOnly] = useState(false);
@@ -35,9 +34,7 @@ export default function Explore() {
 
   const { data: places, loading, error, refetch } = useFetch(() => catalogService.listPlaces(filters), [JSON.stringify(filters)]);
 
-  const handleAdd = (place) => {
-    showToast(`${place.name} — open the AI Planner and mention it in your natural language request, or add it after generating an itinerary.`, 'info');
-  };
+  const [packagesFor, setPackagesFor] = useState(null);
 
   return (
     <div className="container-page py-10">
@@ -45,7 +42,7 @@ export default function Explore() {
         <span className="page-hero-icon"><Search size={24} /></span>
         <div>
           <h1 className="font-display text-2xl font-bold sm:text-3xl">Explore Destinations & Places</h1>
-          <p className="mt-1 text-white/85">Search real seeded places across India, including hidden gems.</p>
+          <p className="mt-1 text-white/85">Discover top places across India and book ready-made travel packages.</p>
         </div>
       </div>
 
@@ -94,10 +91,12 @@ export default function Explore() {
       {!loading && !error && places?.length > 0 && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {places.map((place) => (
-            <PlaceCard key={place.id} place={place} onAdd={handleAdd} />
+            <PlaceCard key={place.id} place={place} onViewPackages={setPackagesFor} />
           ))}
         </div>
       )}
+
+      {packagesFor && <PackagesModal place={packagesFor} onClose={() => setPackagesFor(null)} />}
     </div>
   );
 }

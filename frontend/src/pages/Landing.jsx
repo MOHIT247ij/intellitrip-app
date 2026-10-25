@@ -6,6 +6,7 @@ import { useFetch } from '../hooks/useFetch';
 import { catalogService } from '../services/catalogService';
 import DestinationCard from '../components/DestinationCard';
 import SkeletonCard from '../components/SkeletonCard';
+import PlaceImage from '../components/PlaceImage';
 
 const FEATURES = [
   { icon: Sparkles, title: 'AI-Generated Itineraries', desc: 'Structured, day-by-day plans built from real destination data — not generic templates.' },
@@ -66,9 +67,9 @@ export default function Landing() {
             className="relative"
           >
             <div className="grid grid-cols-2 gap-4">
-              <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2" alt="Goa beach" className="col-span-2 h-52 w-full rounded-xl2 object-cover shadow-cardHover ring-1 ring-white/50" />
-              <img src="https://images.unsplash.com/photo-1564329494258-3f72215ba175" alt="Kashmir lake" className="h-36 w-full rounded-xl2 object-cover shadow-card ring-1 ring-white/50" />
-              <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41" alt="Jaipur fort" className="h-36 w-full rounded-xl2 object-cover shadow-card ring-1 ring-white/50" />
+              <PlaceImage name="Goa" alt="Goa beach" className="col-span-2 h-52 w-full rounded-xl2 object-cover shadow-cardHover ring-1 ring-white/50" />
+              <PlaceImage name="Dal Lake Shikara Ride" alt="Dal Lake, Kashmir" className="h-36 w-full rounded-xl2 object-cover shadow-card ring-1 ring-white/50" />
+              <PlaceImage name="Amber Fort" alt="Amber Fort, Jaipur" className="h-36 w-full rounded-xl2 object-cover shadow-card ring-1 ring-white/50" />
             </div>
             <div className="absolute -bottom-5 -left-5 hidden animate-float items-center gap-2 rounded-xl2 bg-white px-4 py-3 shadow-cardHover sm:flex">
               <span className="icon-badge h-9 w-9 !rounded-lg">

@@ -8,6 +8,7 @@ import { formatCurrency, formatDate } from '../utils/format';
 import EmptyState from '../components/EmptyState';
 import ErrorState from '../components/ErrorState';
 import SkeletonCard from '../components/SkeletonCard';
+import PlaceImage from '../components/PlaceImage';
 
 const TABS = [
   { key: 'UPCOMING', label: 'Upcoming' },
@@ -83,7 +84,7 @@ export default function Trips() {
           {filtered.map((trip) => (
             <div key={trip.id} className="card flex flex-col overflow-hidden">
               <div className="relative h-36 w-full overflow-hidden bg-brand-100">
-                {trip.destination?.imageUrl && <img src={trip.destination.imageUrl} alt={trip.destination.name} className="h-full w-full object-cover" />}
+                {trip.destination?.name && <PlaceImage name={trip.destination.name} fallback={trip.destination.imageUrl} alt={trip.destination.name} className="h-full w-full object-cover" />}
                 <span className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-slate-600">
                   {trip.computedStatus === 'UPCOMING' ? 'Upcoming' : trip.computedStatus === 'PAST' ? 'Past' : trip.status}
                 </span>
