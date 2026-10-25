@@ -7,6 +7,20 @@ An MCA postgraduate mini project: a full-stack, AI-powered travel planning and b
 
 > **Honesty note on this build:** every external paid API (Gemini, Google Maps, OpenWeather, booking inventory, payments, SMS/Email OTP delivery) has a clean **provider abstraction** with a **mock/fallback mode**, so the whole application runs and demos correctly with **zero API keys configured**. Add real keys any time to upgrade a feature from demo mode to live mode — see [Mock Mode vs Production](#mock-mode-vs-production) below.
 
+## Screenshots
+
+| Home | Explore |
+|---|---|
+| ![Home](screenshots/home.jpg) | ![Explore](screenshots/explore.jpg) |
+
+| Travel packages | Package details |
+|---|---|
+| ![Packages](screenshots/packages.jpg) | ![Package details](screenshots/package-details.jpg) |
+
+| Book a package |
+|---|
+| ![Book a package](screenshots/package-booking.jpg) |
+
 ---
 
 ## Table of Contents
